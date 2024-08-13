@@ -598,7 +598,7 @@ input , select , textarea{
     }
   
     h1 {
-      font-size: 1.8rem;
+      font-size: 2rem;
     }
   
     h2 {
@@ -606,7 +606,7 @@ input , select , textarea{
     }
   
     h3 {
-      font-size: 1.1rem;
+      font-size: 1.35rem;
     }
     
     .nav_menu{
@@ -699,5 +699,12 @@ input , select , textarea{
         flex-direction: column;
     }
     
+    .dashboard_post-info{
+        gap: 1.5rem;
+    }
+
+    .dashboard_post-thumbnail{
+        width: 5rem;
+    }
 
   }
