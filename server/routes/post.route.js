@@ -14,7 +14,7 @@ const {
 
 router.post('/', authMiddleware , createPost);
 router.get('/', getPosts);
-router.get('/:id', getPost);
+router.get('/:id', authMiddleware ,getPost);
 router.get('/category/:category', getCategoryPost);
 router.get('/user/:userId', getUserPost);
 router.patch('/:id', authMiddleware ,editPost);

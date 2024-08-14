@@ -53,12 +53,17 @@ const createPost = async (req, res, next) => {
         next(new HttpError("Creating post failed.", 500));
     }
 };
+
+
 // Get All Posts
 // GET request : /api/posts/
 // Unprotected
 const getPosts = async (req, res, next) => {
     try {
-        res.status(200).json({ message: "Fetched all posts" });
+        const posts = await Post.find().sort({
+            updatedAt: -1
+        })
+        res.status(201).json(posts)
     } catch (error) {
         next(new HttpError("Fetching posts failed.", 500));
     }
@@ -66,10 +71,14 @@ const getPosts = async (req, res, next) => {
 
 // Get Single Post
 // GET request : /api/posts/:id
-// Unprotected
+// protected
 const getPost = async (req, res, next) => {
     try {
-        res.status(200).json({ message: `Fetched post with ID ${req.params.id}` });
+
+        const posts = await Post.findById(req.params.id)
+        if (!posts) return next(new HttpError(" post not found.", 500));
+        res.status(201).json(posts)
+
     } catch (error) {
         next(new HttpError("Fetching post failed.", 500));
     }
@@ -80,29 +89,51 @@ const getPost = async (req, res, next) => {
 // Unprotected
 const getCategoryPost = async (req, res, next) => {
     try {
-        res.status(200).json({ message: `Fetched posts in category ${req.params.category}` });
+        const { category } = req.params;
+
+        const posts = await Post.find({ category }).sort({ createdAt: -1 });
+
+        if (!posts || posts.length === 0) {
+            return next(new HttpError("No posts found in this category.", 404));
+        }
+
+        res.status(200).json(posts);
     } catch (error) {
+        console.error(error);
         next(new HttpError("Fetching posts by category failed.", 500));
     }
 };
+
 
 // Get Posts by User
 // GET request : /api/posts/user/:userId
 // Unprotected
 const getUserPost = async (req, res, next) => {
     try {
-        res.status(200).json({ message: `Fetched posts by user with ID ${req.params.userId}` });
+        const { userId } = req.params;
+
+        const posts = await Post.find({ creator:userId }).sort({ createdAt: -1 });
+       
+        if (!posts || posts.length === 0) {
+            return next(new HttpError("No posts found by this user", 404));
+        }
+
+        res.status(200).json(posts);
     } catch (error) {
         next(new HttpError("Fetching user's posts failed.", 500));
     }
 };
+
 
 // Edit Post
 // PATCH request : /api/posts/:id
 // Protected
 const editPost = async (req, res, next) => {
     try {
-        res.status(200).json({ message: `Post with ID ${req.params.id} updated successfully` });
+       
+     
+      
+
     } catch (error) {
         next(new HttpError("Editing post failed.", 500));
     }

@@ -29,6 +29,10 @@ const postSchema = new Schema({
         ref: 'User',
         required: true
     },
+    thumbnail:{
+        type:String,
+        require:true
+    },
  
 },{timestamps:true});
 
