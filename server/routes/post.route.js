@@ -17,7 +17,7 @@ router.get('/', getPosts);
 router.get('/:id', authMiddleware ,getPost);
 router.get('/category/:category', getCategoryPost);
 router.get('/user/:userId', getUserPost);
-router.patch('/:id', authMiddleware ,editPost);
+router.patch('/edit/:postId', authMiddleware ,editPost);
 router.delete('/:id', authMiddleware , deletePost);
 
 module.exports = router;

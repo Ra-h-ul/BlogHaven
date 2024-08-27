@@ -4,6 +4,7 @@ const Post = require('../models/post.model');
 const fs = require("fs");
 const path = require("path");
 const { v4: uuid } = require("uuid");
+const { log } = require('console');
 
 // Create Post
 // POST request : /api/posts/
@@ -112,8 +113,8 @@ const getUserPost = async (req, res, next) => {
     try {
         const { userId } = req.params;
 
-        const posts = await Post.find({ creator:userId }).sort({ createdAt: -1 });
-       
+        const posts = await Post.find({ creator: userId }).sort({ createdAt: -1 });
+
         if (!posts || posts.length === 0) {
             return next(new HttpError("No posts found by this user", 404));
         }
@@ -130,14 +131,73 @@ const getUserPost = async (req, res, next) => {
 // Protected
 const editPost = async (req, res, next) => {
     try {
-       
-     
-      
+        let updatedPost;
+        let newFilename;
 
+        const { title, category, description } = req.body;
+        const { postId } = req.params;
+
+        // Fetch the existing post
+        const oldPost = await Post.findById(postId);
+        if (!oldPost) {
+            return next(new HttpError("Post not found", 404));
+        }
+
+        // Construct the fields to be updated
+        const updatedFields = {};
+        if (title) updatedFields.title = title;
+        if (category) updatedFields.category = category;
+        if (description) updatedFields.description = description;
+
+        // Handle thumbnail update
+        if (req.files && req.files.thumbnail) {
+            const thumbnail = req.files.thumbnail;
+
+            if (thumbnail.size > 2000000) {
+                return next(new HttpError("Thumbnail too big. Should be less than 2MB", 422));
+            }
+
+            // Generate new filename
+            const fileName = thumbnail.name;
+           
+            const splittedFilename = fileName.split('.');
+            newFilename = `${splittedFilename[0]}-${uuid()}.${splittedFilename[splittedFilename.length - 1]}`;
+
+            // Define the upload path
+            const uploadPath = path.join(__dirname, '..', 'uploads', newFilename);
+
+            // Move the new thumbnail file
+            await thumbnail.mv(uploadPath);
+
+            // Remove old thumbnail if it exists
+            if (oldPost.thumbnail) {
+                const oldThumbnailPath = path.join(__dirname, '..', 'uploads', oldPost.thumbnail);
+                fs.unlink(oldThumbnailPath, (err) => {
+                    if (err) {
+                        console.error('Failed to remove old thumbnail:', err);
+                    }
+                });
+            }
+
+            // Update the thumbnail field in the database
+            updatedFields.thumbnail = newFilename;
+        }
+
+        // Update the post with the provided fields
+        updatedPost = await Post.findByIdAndUpdate(postId, updatedFields, { new: true });
+
+        if (!updatedPost) {
+            return next(new HttpError('Failed to update the post', 400));
+        }
+
+        res.status(200).json(updatedPost);
     } catch (error) {
+        console.log(error);
         next(new HttpError("Editing post failed.", 500));
     }
 };
+
+
 
 // Delete Post
 // DELETE request : /api/posts/:id
