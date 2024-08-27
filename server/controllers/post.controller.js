@@ -204,11 +204,46 @@ const editPost = async (req, res, next) => {
 // Protected
 const deletePost = async (req, res, next) => {
     try {
-        res.status(200).json({ message: `Post with ID ${req.params.id} deleted successfully` });
+        const postCreator = req.user.id;
+        const postId = req.params.id;
+
+        
+        // Find the post by ID
+        const deletePost = await Post.findById(postId);
+
+        if (!deletePost) {
+            return next(new HttpError("Post not found.", 404));
+        }
+       
+        // Check if the logged-in user is the creator of the post
+        if (deletePost.creator.toString() !== postCreator) {
+            return next(new HttpError("You are not authorized to delete this post.", 403));
+        }
+       
+
+        const thumbnailPath = path.join(__dirname, '..', 'uploads', deletePost.thumbnail)
+        fs.unlink(thumbnailPath, (err) => {
+            if (err) {
+                console.error("Failed to delete thumbnail:", err);
+            } else {
+                console.log("Thumbnail deleted successfully.");
+            }
+        });
+
+
+        // Delete post from db
+        await Post.findByIdAndDelete(postId);  
+
+        const currentUser = await User.findById(req.user.id);
+        const userPostCount = currentUser?.posts-1;
+        await User.findByIdAndUpdate(req.user.id , {posts:userPostCount})      
+
+        res.status(200).json({ message: "Post deleted successfully." });
     } catch (error) {
         next(new HttpError("Deleting post failed.", 500));
     }
 };
+
 
 // Export all functions
 module.exports = {
