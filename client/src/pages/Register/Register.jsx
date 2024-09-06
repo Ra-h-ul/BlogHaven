@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import '../../index.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {REACT_APP_BASE_URL} from '../../lib/env'
 
 function Register() {
-
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -11,16 +12,37 @@ function Register() {
     password2: ''
   });
 
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
   const changeInputHandler = (e) => {
     setUserData(prev => {
-      return { ...prev, [e.target.name]: e.target.value }; // Corrected to e.target.value
+      return { ...prev, [e.target.name]: e.target.value }; 
     });
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    // Add form submission logic here
-    console.log(userData);
+    
+    console.log(REACT_APP_BASE_URL);
+    try {
+      
+      const response = await axios.post(`${REACT_APP_BASE_URL}/users/register`, userData);
+      
+      
+
+      const newUser = response.data;
+      console.log(newUser);
+
+      if (!newUser) {
+        setError("Couldn't register user. Please try again.");
+      } else {
+        navigate('/login');
+      }
+      
+    } catch (error) {
+      setError(error.response?.data?.message || "Registration Failed");
+    }
   };
 
   return (
@@ -28,12 +50,14 @@ function Register() {
       <div className="wrapper">
         <section className="register">
           <div className="container">
-            <form action="" className='form register_form' onSubmit={submitHandler}>
-              <h3>Sign in</h3>
+            <form className='form register_form' onSubmit={submitHandler}>
+              <h3>Sign up</h3>
 
-              <p className='form_error-message'>
-                This is an error message
-              </p>
+              {error && 
+                <p className='form_error-message'>
+                  {error}
+                </p>
+              }
 
               <input
                 type="text"
@@ -44,7 +68,7 @@ function Register() {
               />
 
               <input
-                type="text"
+                type="email"
                 placeholder='Email'
                 name='email'
                 value={userData.email}
@@ -68,10 +92,12 @@ function Register() {
               />
 
               <button type='submit' className='btn primary'>Register</button>
-
             </form>
 
-            <small>Already have an account? <Link to="/login" className='sign_in'> Login</Link></small>
+            <small>Already have an account? <Link to="/login" className='sign_in'>Login</Link></small>
+
+            
+
           </div>
         </section>
       </div>

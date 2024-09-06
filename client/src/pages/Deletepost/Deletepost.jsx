@@ -1,8 +1,13 @@
 import React from 'react'
-
+import UseAuthRedirect from '../../components/UseAuthRedirect/UseAuthRedirect';
+import { Link } from 'react-router-dom';
 function Deletepost() {
+  UseAuthRedirect();
+
   return (
-    <div>Deletepost</div>
+   <>
+   <Link className='btn sm danger' >Delete</Link>
+   </>
   )
 }
 

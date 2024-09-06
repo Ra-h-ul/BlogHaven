@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { MdEdit } from "react-icons/md";
 import '../../index.css';
 import AvatarImage from '../../assets/images/avatar15.jpg';
+import UseAuthRedirect from '../../components/UseAuthRedirect/UseAuthRedirect';
 
 function Userprofile() {
+  UseAuthRedirect();
   const [avatar, setAvatar] = useState(AvatarImage);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

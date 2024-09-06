@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import UseAuthRedirect from "../../components/UseAuthRedirect/UseAuthRedirect";
 
 function Editpost() {
+  UseAuthRedirect();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Uncategorized");
   const [description, setDescription] = useState("");

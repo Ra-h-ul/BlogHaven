@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import '../../../src/index.css';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { CiMenuBurger } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
+import { UserContext } from '../../context/Usercontext';
 
 function Header() {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
+  const {currentUser} = useContext(UserContext);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,7 +40,8 @@ function Header() {
         <Link to='/' className='nav_logo'  onClick={closeNavHandler}> 
           <img src={logo} alt="logo" />
         </Link>
-        {isNavShowing && 
+
+        { currentUser?.id && isNavShowing && 
           <ul className="nav_menu">
             <li> 
               <Link to="/profile/123" onClick={closeNavHandler}>Profile Page</Link>
@@ -50,6 +54,20 @@ function Header() {
             </li>
             <li> 
               <Link to="/logout" onClick={closeNavHandler}>Logout</Link>
+            </li>
+          </ul>
+        }
+
+        { !currentUser?.id && isNavShowing && 
+          <ul className="nav_menu">
+            <li> 
+              <Link to="/authors" onClick={closeNavHandler} >Authors</Link>
+            </li>
+            <li> 
+              <Link to="/register" onClick={closeNavHandler}>Register</Link>
+            </li>
+            <li> 
+              <Link to="/login" onClick={closeNavHandler}>Login</Link>
             </li>
           </ul>
         }

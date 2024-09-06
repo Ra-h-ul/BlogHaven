@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DUMMY_POSTS } from '../../lib/data';
+import UseAuthRedirect from '../../components/UseAuthRedirect/UseAuthRedirect';
 
 function Dashboard() {
+  UseAuthRedirect();
   const [posts, setPosts] = useState(DUMMY_POSTS);
-
+ 
   return (
     <>
       <section className="dashboard">

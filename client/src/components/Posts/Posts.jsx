@@ -1,44 +1,68 @@
-import React, { useState } from 'react'
-import '../../index.css'
-
-import Thumbnail1 from '../../assets/images/blog1.jpg';
-import Thumbnail2 from '../../assets/images/blog2.jpg';
-import Thumbnail3 from '../../assets/images/blog3.jpg';
-import Thumbnail4 from '../../assets/images/blog4.jpg';
+import React, { useEffect, useState } from 'react';
+import '../../index.css';
 import Postitem from '../Postitem/Postitem';
-import {DUMMY_POSTS} from '../../lib/data' 
+import Spinner from '../Spinner/Spinner';
+import { REACT_APP_BASE_URL } from '../../lib/env';
+import axios from 'axios';
 
-
-  
 function Posts() {
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const [posts , setPosts] = useState(DUMMY_POSTS);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(`${REACT_APP_BASE_URL}/posts`);
+        setPosts(response?.data);
+        
+      } catch (error) {
+        setError('Failed to load posts');
+        console.log(error);
+      }
+      setIsLoading(false);
+    };
+    fetchPosts();
+  }, []);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
-   <>
     <section className='posts'>
-    {posts.length>0 ?
-     <div className="container posts_container ">
-      {posts.map(({ id, thumbnail, category, title, desc, authorID }) => (
-            <Postitem
-                key={id}
-                postID={id}
-                thumbnail={thumbnail}
-                category={category}
-                title={title}
-                description={desc}
-                authorID={authorID}
-            />
-            ))} 
-        </div> 
-        : <div className="center">
-          <h2>No Posts Available</h2>
-          </div>
-        } 
+      {error ? (
+        <div className="center">
+          <h2>{error}</h2>
+        </div>
+      ) : (
+        <>
+          {posts.length > 0 ? (
+            <div className="container posts_container">
+              {posts.map(({ _id:id, thumbnail, category, title, description, creator, createdAt }) => (
+                <Postitem
+                  key={id}
+                  postID={id}
+                  thumbnail={thumbnail}
+                  category={category}
+                  title={title}
+                  description={description}
+                  creator={creator}
+                  createdAt={createdAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="center">
+              <h2>No Posts Available</h2>
+            </div>
+          )}
+        </>
+      )}
     </section>
-
-   </>
-  )
+  );
 }
 
-export default Posts
+export default Posts;

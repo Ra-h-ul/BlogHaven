@@ -1,41 +1,87 @@
-import React from 'react'
-import '../../index.css'
-import { Link } from 'react-router-dom'
-import Postauthor from '../../components/Postauthor/Postauthor'
-import image1 from '../../assets/images/blog6.jpg'
+import React, { useContext, useEffect, useState } from 'react';
+import '../../index.css';
+import { Link, useParams } from 'react-router-dom';
+import Postauthor from '../../components/Postauthor/Postauthor';
+import Spinner from '../../components/Spinner/Spinner';
+import Deletepost from '../Deletepost/Deletepost';
+import UseAuthRedirect from '../../components/UseAuthRedirect/UseAuthRedirect';
+import { UserContext } from '../../context/Usercontext';
+import axios from 'axios';
+import { REACT_APP_ASSETS_URL, REACT_APP_BASE_URL } from '../../lib/env';
 
 function Postdetail() {
+  UseAuthRedirect();
+
+  const { id } = useParams();
+  const [post, setPost] = useState();
+  const [creatorID, setCreatorID] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { currentUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const getPost = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(`${REACT_APP_BASE_URL}/posts/${id}`);
+        setPost(response.data);
+        setCreatorID(response.data.creator);
+      } catch (error) {
+        setError('Failed to load post.');
+        console.error(error);
+      }
+      setIsLoading(false);
+    };
+    getPost();
+  }, [id]);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="center">
+        <h2>{error}</h2>
+      </div>
+    );
+  }
+
+  console.log(currentUser.id);
+  
+  
   return (
     <section className="post-details">
-      <div className="container post-detail_container">
-        
-        <div className="post-detail_header">
-          <Postauthor/>
-    
-        <div className="post-detail_buttons">
-          <Link to={`/posts/werwer/edit`} className='btn sm primary' >Edit</Link>
-          <Link to={`/posts/werwer/delete`} className='btn sm danger' >Delete</Link>
-        </div>
-        </div>
+      {post && (
+        <div className="container post-detail_container">
+          <div className="post-detail_header">
+            <Postauthor createdAt={post.createdAt} creator={post.creator} />
 
-        <h1>This is the post title</h1>
-        <div className="post-detail_thumbnail">
-            <img src={image1} alt="" />
+            {currentUser?.id === post.creator && (
+              <div className="post-detail_buttons">
+                <Link to={`/posts/${id}/edit`} className="btn sm primary">
+                  Edit
+                </Link>
+                <Deletepost postId={post.id} />
+              </div>
+            )}
+          </div>
+
+          <h1>{post.title}</h1>
+          {post.thumbnail && (
+            <div className="post-detail_thumbnail">
+              <img src={`${REACT_APP_ASSETS_URL}/uploads/${post.thumbnail}`} alt={post.title} />
+            </div>
+          )}
+
+          <div className="post-detail_content">
+            <p dangerouslySetInnerHTML={{__html : post.description} } ></p>
+          </div>
         </div>
-
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, eveniet nisi dicta provident necessitatibus ratione molestiae voluptas dignissimos minus perspiciatis? Iste, pariatur laudantium! Hic in ipsam ut optio beatae maxime sequi illo ea. Accusamus eaque odio quis voluptatum ipsa laudantium, harum, nisi facilis repellendus iste qui sint, quaerat dicta fugiat porro. Dolore consequuntur nisi veniam beatae vel blanditiis? Voluptate eligendi, voluptatum ut, earum, deserunt culpa quaerat sunt laudantium facere delectus deleniti ipsa perferendis laboriosam illo atque ullam repellendus consequuntur blanditiis voluptatem. Nostrum dolores cupiditate quos ducimus amet distinctio maxime tempora! Cupiditate dolorem distinctio harum illum enim ipsam necessitatibus quos debitis!
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, eveniet nisi dicta provident necessitatibus ratione molestiae voluptas dignissimos minus perspiciatis? Iste, pariatur laudantium! Hic in ipsam ut optio beatae maxime sequi illo ea. Accusamus eaque odio quis voluptatum ipsa laudantium, harum, nisi facilis repellendus iste qui sint, quaerat dicta fugiat porro. Dolore consequuntur nisi veniam beatae vel blanditiis? Voluptate eligendi, voluptatum ut, earum, deserunt culpa quaerat sunt laudantium facere delectus deleniti ipsa perferendis laboriosam illo atque ullam repellendus consequuntur blanditiis voluptatem. Nostrum dolores cupiditate quos ducimus amet distinctio maxime tempora! Cupiditate dolorem distinctio harum illum enim ipsam necessitatibus quos debitis!
-        </p>
-
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, eveniet nisi dicta provident necessitatibus ratione molestiae voluptas dignissimos minus perspiciatis? Iste, pariatur laudantium! Hic in ipsam ut optio beatae maxime sequi illo ea. Accusamus eaque odio quis voluptatum ipsa laudantium, harum, nisi facilis repellendus iste qui sint, quaerat dicta fugiat porro. Dolore consequuntur nisi veniam beatae vel blanditiis? Voluptate eligendi, voluptatum ut, earum, deserunt culpa quaerat sunt laudantium facere delectus deleniti ipsa perferendis laboriosam illo atque ullam repellendus consequuntur blanditiis voluptatem. Nostrum dolores cupiditate quos ducimus amet distinctio maxime tempora! Cupiditate dolorem distinctio harum illum enim ipsam necessitatibus quos debitis!
-        </p>
-      </div> 
+      )}
     </section>
-  )
+  );
 }
 
-export default Postdetail
+export default Postdetail;
