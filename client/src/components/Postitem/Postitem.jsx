@@ -15,8 +15,7 @@ function Postitem({
   createdAt
 }) {
 
-  console.log(description);
-  console.log(thumbnail);
+ 
   const shortDescription = description.length > 145 ? description.slice(0, 100) + '...' : description;
 
     const postTitle = title.length > 30 ? title.slice(0, 30) + '...' : title;
@@ -33,8 +32,8 @@ function Postitem({
           <h3>{postTitle}</h3>
         </Link>
 
-          <p>{shortDescription}</p>
         
+          <p dangerouslySetInnerHTML={{__html : shortDescription} } ></p>
 
         <div className="post_footer">
           <Postauthor creator={creator} createdAt={createdAt} />

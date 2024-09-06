@@ -9,9 +9,10 @@ import { UserContext } from '../../context/Usercontext';
 function Header() {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
   const {currentUser} = useContext(UserContext);
-
+  
 
   useEffect(() => {
+    console.log(window.innerWidth);
     const handleResize = () => {
       if (window.innerWidth > 800) {
         setIsNavShowing(true);
@@ -32,19 +33,25 @@ function Header() {
   };
 
   const closeNavHandler = () => {
-    setIsNavShowing(false);
+    if (window.innerWidth > 800) {
+      setIsNavShowing(true);
+    } else {
+      setIsNavShowing(false);
+    }
   };
+
+  console.log(currentUser?.id , isNavShowing);
   return (
     <nav>
       <div className="container nav_container">
         <Link to='/' className='nav_logo'  onClick={closeNavHandler}> 
           <img src={logo} alt="logo" />
         </Link>
-
+        
         { currentUser?.id && isNavShowing && 
           <ul className="nav_menu">
             <li> 
-              <Link to="/profile/123" onClick={closeNavHandler}>Profile Page</Link>
+              <Link to="/profile/123" onClick={closeNavHandler}>{currentUser.name}</Link>
             </li>
             <li> 
               <Link to="/create" onClick={closeNavHandler} >Create Post</Link>
