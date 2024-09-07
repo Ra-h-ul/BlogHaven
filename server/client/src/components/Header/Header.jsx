@@ -8,11 +8,12 @@ import { UserContext } from '../../context/Usercontext';
 
 function Header() {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
-  const {currentUser} = useContext(UserContext);
-  const id = currentUser.id;
+  const { currentUser } = useContext(UserContext);
+  
+  // Safely handle currentUser
+  const userId = currentUser?.id;
 
   useEffect(() => {
-    
     const handleResize = () => {
       if (window.innerWidth > 800) {
         setIsNavShowing(true);
@@ -22,7 +23,6 @@ function Header() {
     };
     
     window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -33,55 +33,49 @@ function Header() {
   };
 
   const closeNavHandler = () => {
-    if (window.innerWidth > 800) {
-      setIsNavShowing(true);
-    } else {
-      setIsNavShowing(false);
-    }
+    setIsNavShowing(window.innerWidth > 800);
   };
 
- 
   return (
     <nav>
       <div className="container nav_container">
-        <Link to='/' className='nav_logo'  onClick={closeNavHandler}> 
+        <Link to='/' className='nav_logo' onClick={closeNavHandler}>
           <img src={logo} alt="logo" />
         </Link>
         
-        { currentUser?.id && isNavShowing && 
+        {userId && isNavShowing && (
           <ul className="nav_menu">
-            <li> 
-            
-              <Link to={`/myposts/${currentUser.id}`} onClick={closeNavHandler}>My posts</Link>
+            <li>
+              <Link to={`/myposts/${userId}`} onClick={closeNavHandler}>My posts</Link>
             </li>
-            <li> 
-              <Link to="/create" onClick={closeNavHandler} >Create Post</Link>
+            <li>
+              <Link to="/create" onClick={closeNavHandler}>Create Post</Link>
             </li>
-            <li> 
-              <Link to="/authors" onClick={closeNavHandler} >Authors</Link>
+            <li>
+              <Link to="/authors" onClick={closeNavHandler}>Authors</Link>
             </li>
-            <li> 
+            <li>
               <Link to="/logout" onClick={closeNavHandler}>Logout</Link>
             </li>
           </ul>
-        }
+        )}
 
-        { !currentUser?.id && isNavShowing && 
+        {!userId && isNavShowing && (
           <ul className="nav_menu">
-            <li> 
-              <Link to="/authors" onClick={closeNavHandler} >Authors</Link>
+            <li>
+              <Link to="/authors" onClick={closeNavHandler}>Authors</Link>
             </li>
-            <li> 
+            <li>
               <Link to="/register" onClick={closeNavHandler}>Register</Link>
             </li>
-            <li> 
+            <li>
               <Link to="/login" onClick={closeNavHandler}>Login</Link>
             </li>
           </ul>
-        }
+        )}
 
-        <button className='nav_toggle-btn btn ' onClick={toggleNavHandler}>
-          {isNavShowing ? <RxCross2 /> : <CiMenuBurger /> }
+        <button className='nav_toggle-btn btn' onClick={toggleNavHandler}>
+          {isNavShowing ? <RxCross2 /> : <CiMenuBurger />}
         </button>
       </div>
     </nav>
