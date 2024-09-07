@@ -18,15 +18,15 @@ function Authorspost() {
       try {
         const response = await axios.get(`${REACT_APP_BASE_URL}/posts/user/${id}`);
         setPosts(response?.data);
-        console.log("setPosts");
+      
       } catch (error) {
         setError('Failed to load posts');
-        console.log(error);
+       
       }
       setIsLoading(false);
     };
     fetchPosts();
-  }, [id]); // Include id in dependency array
+  }, [id]); 
 
   if (isLoading) {
     return <Spinner />;

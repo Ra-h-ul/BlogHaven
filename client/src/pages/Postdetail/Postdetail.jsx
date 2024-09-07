@@ -48,7 +48,6 @@ function Postdetail() {
     );
   }
 
-  console.log(currentUser.id);
   
   
   return (
@@ -63,7 +62,7 @@ function Postdetail() {
                 <Link to={`/posts/${id}/edit`} className="btn sm primary">
                   Edit
                 </Link>
-                <Deletepost postId={post.id} />
+                <Deletepost postId={post._id} />
               </div>
             )}
           </div>

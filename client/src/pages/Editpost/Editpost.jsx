@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import UseAuthRedirect from "../../components/UseAuthRedirect/UseAuthRedirect";
+import { useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../../context/Usercontext";
+import axios from "axios";
+import { REACT_APP_BASE_URL } from "../../lib/env";
 
 function Editpost() {
   UseAuthRedirect();
@@ -9,6 +13,13 @@ function Editpost() {
   const [category, setCategory] = useState("Uncategorized");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState("");
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const { currentUser } = useContext(UserContext);
+  const token = currentUser?.token;
 
   const modules = {
     toolbar: [
@@ -50,13 +61,59 @@ function Editpost() {
     "Weather",
   ];
 
+  const editpost = async (e) => {
+    e.preventDefault();
+
+    const postData = new FormData();
+    postData.set('title', title);
+    postData.set('category', category);
+    postData.set('description', description);
+    if (thumbnail) postData.set('thumbnail', thumbnail);
+
+    try {
+      if (!token) {
+        throw new Error("Authentication token is missing");
+      }
+
+      const response = await axios.patch(
+        `${REACT_APP_BASE_URL}/posts/edit/${id}`,
+        postData,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (response.status === 200) {
+        navigate('/');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred');
+      console.log(error);
+    }
+  };
+
+
+  useEffect(()=>{
+    const getpost = async()=>{
+      try {
+        const response = await axios.get(`${REACT_APP_BASE_URL}/posts/${id}`)
+        setTitle(response.data.title);
+        setCategory(response.data.category);
+        setDescription(response.data.description);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getpost();
+  },[])
+
   return (
     <section className="create-post">
       <div className="container">
         <h2>Edit Post</h2>
-        <p className="form_error-message">This is an error message</p>
-
-        <form className="form create-post_form">
+        {error && <p className="form_error-message">{error}</p>}
+        <form className="form create-post_form" onSubmit={editpost}>
           <input
             type="text"
             placeholder="Title"

@@ -150,9 +150,9 @@ const changeAvatar = async (req, res, next) => {
             if (!updatedAvatar) {
                 return next(new HttpError("Avatar could not be updated.", 422));
             }
-
+            console.log(newFilename);
             res.status(200).json(
-                updatedAvatar,
+                updatedAvatar
                );
         });
     } catch (error) {
