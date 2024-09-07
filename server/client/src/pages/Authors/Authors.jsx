@@ -4,7 +4,6 @@ import '../../index.css'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
 import { REACT_APP_ASSETS_URL, REACT_APP_BASE_URL } from '../../lib/env';
-import DefaultAvatar from '../../assets/images/avatar1.jpg'
 import Spinner from '../../components/Spinner/Spinner';
 function Authors() {
   
