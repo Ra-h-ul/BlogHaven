@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import '../../../src/index.css';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
+//import logo from '../../assets/images/logo.png';
+import { FaBlog } from "react-icons/fa";
 import { CiMenuBurger } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
 import { UserContext } from '../../context/Usercontext';
@@ -40,7 +41,7 @@ function Header() {
     <nav>
       <div className="container nav_container">
         <Link to='/' className='nav_logo' onClick={closeNavHandler}>
-          <img src={logo} alt="logo" />
+          <img src={<FaBlog />} alt="logo" />
         </Link>
         
         {userId && isNavShowing && (
