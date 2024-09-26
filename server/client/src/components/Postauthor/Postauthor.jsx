@@ -7,6 +7,7 @@ import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en.json';
 import ru from 'javascript-time-ago/locale/ru.json';
 import { FaUser } from "react-icons/fa";
+import postavatar from '../../lib/profile.png'
 
 
 // Add locales to TimeAgo
@@ -36,7 +37,7 @@ function Postauthor({ createdAt, creator }) {
     <Link to={`/posts/users/${creator}`} className="post_author">
       <div className="post_author-avatar">
         <img
-          src={author.avatar ? `${REACT_APP_ASSETS_URL}/uploads/${author.avatar}` : <FaUser /> }
+          src={postavatar}
           alt={author.name || 'Author'}
         />
       </div>
