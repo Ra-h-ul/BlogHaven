@@ -6,6 +6,7 @@ import { FaBlog } from "react-icons/fa";
 import { CiMenuBurger } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
 import { UserContext } from '../../context/Usercontext';
+import blogicon from '../../lib/blog.png';
 
 function Header() {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
@@ -41,7 +42,7 @@ function Header() {
     <nav>
       <div className="container nav_container">
         <Link to='/' className='nav_logo' onClick={closeNavHandler}>
-          <img src={<FaBlog />} alt="logo" />
+          <img src={blogicon} alt="logo" />
         </Link>
         
         {userId && isNavShowing && (
